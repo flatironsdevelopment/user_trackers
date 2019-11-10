@@ -1,0 +1,24 @@
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  pool: 5
+  username: postgres
+  password:
+
+test: <%= ENV["DB_CONNECTION"] %>
+
+development:
+  <<: *default
+  database: victory_lap_development
+  probando:
+    coletera: mix
+    testing: mono
+    testenv: <%= ENV["DB_CONNECTION"] %>
+
+test:
+  <<: *default
+  database: victory_lap_test
+
+production:
+  <<: *default
+  database: victory_lap_production
