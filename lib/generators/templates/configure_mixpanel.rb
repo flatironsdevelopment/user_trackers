@@ -10,7 +10,6 @@ UserTrackers.configure_mixpanel do |config|
   end
 
   def config.event_attributes(user_id, event_name, event_attributes = {}, anonymous_id)
-    h1 = { "a" => 100, "b" => 200 }
-    event_attributes.merge(h1) 
+    event_attributes
   end
 end
