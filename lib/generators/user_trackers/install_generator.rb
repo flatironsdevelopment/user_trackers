@@ -13,7 +13,7 @@ module UserTrackers
       invoke "active_record:model", ['UserEvent', [
         "user_id:integer:index", 
         "event_name:string:index",
-        "event_details:json",
+        "event_attributes:json",
         "anonymous_id:integer"
       ]], migration: true
     end

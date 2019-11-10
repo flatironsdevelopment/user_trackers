@@ -17,7 +17,8 @@ module UserTrackers
       @client
     end
   
-    def self.track(user_id, event_name, event_attributes = {}, anonymous_id = nil)
+    def self.track(params)
+      user_id, event_name, event_attributes, anonymous_id = params.values_at('user_id', 'event_name', 'event_attributes', 'anonymous_id')
       client.chat_postMessage(
         channel: @activity_channel,
         text: message_for_event(user_id, event_name, event_attributes, anonymous_id)

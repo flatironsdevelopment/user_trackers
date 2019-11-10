@@ -3,8 +3,10 @@ require "user_trackers/mixpanel_tracker"
 require "user_trackers/intercom_tracker"
 require "user_trackers/slack_tracker"
 require "user_trackers/workers/sidekiq_worker"
+require "user_trackers/workers/resque_worker"
 
 require 'sidekiq'
+require 'resque'
 require 'mixpanel-ruby'
 require 'intercom'
 require 'slack-ruby-client'
@@ -14,7 +16,7 @@ module UserTrackers
     attr_accessor :options
   end
 
-  TRACKERS = ['mixpanel','intercom','slack']
+  TRACKERS = ['mixpanel', 'intercom', 'slack']
   def self.trackers
     TRACKERS
   end
@@ -28,24 +30,27 @@ module UserTrackers
     ignore_events.include?(event_name) || ignore_events.include?('*')
   end
 
-  def self._track(user_id, event_name, event_attributes = {}, anonymous_id = nil)
+  def self._track(params)
+    event_name = params['event_name']
     if(!ignore_event? (event_name))
       if(!ignore_event?(event_name, :db))
-        UserEvent.create(user_id: user_id, event_name: event_name, event_details: event_attributes, anonymous_id: anonymous_id) 
+        UserEvent.create(params) 
       end
       trackers.each do |tracker|
         if(!ignore_event?(event_name, tracker.to_sym))
-          eval("#{tracker.capitalize}Tracker.track(user_id, event_name, event_attributes, anonymous_id)")
+          eval("#{tracker.capitalize}Tracker.track(params.as_json)")
         end
       end
     end
   end
 
-  def self.track(user_id, event_name, event_attributes = {}, anonymous_id = nil)
+  def self.track(params)
     if options[Rails.env.to_sym][:queue_adapter] == 'sidekiq'
-      SidekiqWorker.perform_async(user_id, event_name, event_attributes, anonymous_id) 
+      SidekiqWorker.perform_async(params) 
+    elsif options[Rails.env.to_sym][:queue_adapter] == 'resque'
+      Resque.enqueue(RescueWorker, params)
     else 
-      _track(user_id, event_name, event_attributes, anonymous_id)
+      _track(params)
     end
   end
 end

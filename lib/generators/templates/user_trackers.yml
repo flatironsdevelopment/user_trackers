@@ -1,6 +1,6 @@
 development:
   ignore_events: ['ignored_event_name']
-  queue_adapter: sidekiq
+  # queue_adapter: sidekiq
   mixpanel:
     token: <%= ENV["DEV_MIXPANEL_TOKEN"] %>
     ignore_events: []
