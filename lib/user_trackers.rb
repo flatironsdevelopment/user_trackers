@@ -17,7 +17,7 @@ module UserTrackers
     attr_accessor :options
   end
 
-  TRACKERS = ['mixpanel', 'intercom', 'slack']
+  TRACKERS = ['mixpanel','intercom','slack']
   def self.trackers
     TRACKERS
   end
@@ -35,14 +35,12 @@ module UserTrackers
     event_name = params['event_name']
     if(!ignore_event? (event_name))
       if(!ignore_event?(event_name, :db))
+        UserEvent.create(
+          anonymous_id: params[:anonymous_id],
+          event_name:'logged_in_as', 
+          event_attributes:{ user_id: params[:user_id] }
+        )  if params[:user_logged_in]
         UserEvent.create(params.except(:user_logged_in)) 
-        if params[:user_logged_in]
-          User.create(
-            user_id: params[:anonymous_id],
-            event_name:'logged_in_as', 
-            event_attributes:{ user_id: params[:user_id] }
-          )
-        end
       end
       trackers.each do |tracker|
         if(!ignore_event?(event_name, tracker.to_sym))

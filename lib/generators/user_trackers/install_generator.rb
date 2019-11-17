@@ -12,9 +12,9 @@ module UserTrackers
     def generate_model
       invoke "active_record:model", ['UserEvent', [
         "user_id:string:index", 
+        "anonymous_id:string",
         "event_name:string:index",
-        "event_attributes:json",
-        "anonymous_id:integer"
+        "event_attributes:json"
       ]], migration: true
     end
   end 
