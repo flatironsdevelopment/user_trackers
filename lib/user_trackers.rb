@@ -32,7 +32,7 @@ module UserTrackers
   end
 
   def self._track(params)
-    event_name = params['event_name']
+    event_name = params[:event_name]
     if(!ignore_event? (event_name))
       if(!ignore_event?(event_name, :db))
         UserEvent.create(
@@ -43,8 +43,10 @@ module UserTrackers
         UserEvent.create(params.except(:user_logged_in)) 
       end
       trackers.each do |tracker|
-        if(!ignore_event?(event_name, tracker.to_sym))
-          eval("#{tracker.capitalize}Tracker.track(params.as_json)")
+        if options[Rails.env.to_sym][tracker.to_sym]
+          if(!ignore_event?(event_name, tracker.to_sym))
+            eval("#{tracker.capitalize}Tracker.track(params.as_json)")
+          end
         end
       end
     end
