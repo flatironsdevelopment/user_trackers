@@ -15,7 +15,7 @@ module UserTrackers
       client.people.set(user_id, user_attributes(user_id, event_name, event_attributes, anonymous_id)) if user_id
       client.track(
         user_id || anonymous_id, 
-        event_name || "", 
+        event_name || "undefined_event", 
         event_attributes(user_id, event_name, event_attributes, anonymous_id) || {}
       )
     end

@@ -34,7 +34,7 @@ module UserTrackers
         end
         client.events.create( {
           id: id,
-          event_name: event_name,
+          event_name: event_name || "undefined_event",
           created_at: Time.now.to_i,
           metadata: event_attributes&.first(5).to_h || {},
         })
