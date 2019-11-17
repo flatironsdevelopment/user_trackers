@@ -18,8 +18,10 @@ module UserTrackers
         if user_logged_in
           contact_list = client.contacts.find(email: anonymous_id)
           if !contact_list.contacts.empty?
-            lead = client.contacts.find(id: contact_list.contacts.first['id'])
-            client.contacts.convert(lead, Intercom::User.new(user_id: user_id))
+            contact_list.contacts.each do |contact|
+              lead = client.contacts.find(id: contact['id'])
+              client.contacts.convert(lead, Intercom::User.new(user_id: user_id))
+            end
           end
         end
       else
