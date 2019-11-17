@@ -17,8 +17,10 @@ module UserTrackers
         client.events.create(event_attributes(user_id, event_name, event_attributes, anonymous_id))
         if user_logged_in
           contact_list = client.contacts.find(email: anonymous_id)
-          lead = client.contacts.find(id: contact_list.contacts.first['id'])
-          client.contacts.convert(lead, Intercom::User.new(user_id: user_id))
+          if !contact_list.contacts.empty?
+            lead = client.contacts.find(id: contact_list.contacts.first['id'])
+            client.contacts.convert(lead, Intercom::User.new(user_id: user_id))
+          end
         end
       else
         contact_list = client.contacts.find(email: anonymous_id)
