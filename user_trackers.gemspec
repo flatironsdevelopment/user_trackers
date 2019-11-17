@@ -11,9 +11,11 @@ Gem::Specification.new do |s|
     'https://rubygems.org/gems/user_trackers'
   s.license       = 'MIT'
   s.add_dependency  "sidekiq"
+  s.add_dependency  "resque"
   s.add_dependency 'mixpanel-ruby'
   s.add_dependency 'intercom'
   s.add_dependency 'slack-ruby-client'
+  s.add_dependency 'uuid'
   s.add_development_dependency "rake", "~> 10.0"
   s.add_development_dependency "minitest", "~> 5.0"
 end

@@ -11,7 +11,7 @@ module UserTrackers
 
     def generate_model
       invoke "active_record:model", ['UserEvent', [
-        "user_id:integer:index", 
+        "user_id:string:index", 
         "event_name:string:index",
         "event_attributes:json",
         "anonymous_id:integer"

@@ -9,6 +9,7 @@ require 'sidekiq'
 require 'resque'
 require 'mixpanel-ruby'
 require 'intercom'
+require 'uuid'
 require 'slack-ruby-client'
 
 module UserTrackers
@@ -34,7 +35,14 @@ module UserTrackers
     event_name = params['event_name']
     if(!ignore_event? (event_name))
       if(!ignore_event?(event_name, :db))
-        UserEvent.create(params) 
+        UserEvent.create(params.except(:user_logged_in)) 
+        if params[:user_logged_in]
+          User.create(
+            user_id: params[:anonymous_id],
+            event_name:'logged_in_as', 
+            event_attributes:{ user_id: params[:user_id] }
+          )
+        end
       end
       trackers.each do |tracker|
         if(!ignore_event?(event_name, tracker.to_sym))
@@ -44,7 +52,19 @@ module UserTrackers
     end
   end
 
-  def self.track(params)
+  def self.track(params, session = nil)
+    if session
+      if params[:user_id] && session['anonymous_id']
+        params[:user_logged_in] = true
+        params[:anonymous_id] = session['anonymous_id']
+        session.delete('anonymous_id')
+      elsif !params[:user_id]
+        session['anonymous_id'] ||= UUID.new.generate
+        params[:anonymous_id] = session['anonymous_id']
+      end
+    end
+    params[:anonymous_id] ||= UUID.new.generate
+
     if options[Rails.env.to_sym][:queue_adapter] == 'sidekiq'
       SidekiqWorker.perform_async(params) 
     elsif options[Rails.env.to_sym][:queue_adapter] == 'resque'

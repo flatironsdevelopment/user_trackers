@@ -17,8 +17,14 @@ module UserTrackers
       @client
     end
   
-    def self.track(params)
-      user_id, event_name, event_attributes, anonymous_id = params.values_at('user_id', 'event_name', 'event_attributes', 'anonymous_id')
+    def self.track(params, session)
+      user_id, event_name, event_attributes, anonymous_id, user_logged_in = params.values_at('user_id', 'event_name', 'event_attributes', 'anonymous_id', 'user_logged_in')
+      if user_logged_in
+        client.chat_postMessage(
+          channel: @activity_channel,
+          text: "An anonymous person with id #{anonymous_id} logged in as user with id #{user_id}"
+        )
+      end
       client.chat_postMessage(
         channel: @activity_channel,
         text: message_for_event(user_id, event_name, event_attributes, anonymous_id)
