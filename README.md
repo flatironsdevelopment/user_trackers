@@ -52,7 +52,7 @@ API Tokens related to [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [In
     
     production:
       ignore_events: ['ignored_event_name']
-      queue_adapter: sidekiq
+      queue_adapter: resque
       mixpanel:
         token: <%= ENV["MIXPANEL_TOKEN"] %>
       intercom:
