@@ -1,13 +1,13 @@
 PATH
   remote: .
   specs:
-    user_trackers (0.0.1)
-      intercom
-      mixpanel-ruby
-      resque
-      sidekiq
-      slack-ruby-client
-      uuid
+    user_trackers (0.0.14)
+      intercom (>= 3.0.0)
+      mixpanel-ruby (>= 2.0.0)
+      resque (>= 2.0.0)
+      sidekiq (>= 5.0.0)
+      slack-ruby-client (~> 0.14.0)
+      uuid (>= 2.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -97,9 +97,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  minitest (~> 5.0)
-  rake (~> 10.0)
-  rspec
+  minitest (>= 5.0)
+  rake (>= 10.0)
+  rspec (>= 3.9.0)
   user_trackers!
 
 BUNDLED WITH
