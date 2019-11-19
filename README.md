@@ -82,7 +82,7 @@ API Tokens related to [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [In
       db:
         ignore_events: []
 
-You may ignore events per environment or per tracker. You may specify a `queue_adapter` option with a value of `resque` or `sidekiq` for running trackers on a background job.
+You may ignore events per environment or per tracker. For running trackers on a background job, specify a `queue_adapter` option with a value of `resque` or `sidekiq` 
 
 ## Configuration files for trackers
 
