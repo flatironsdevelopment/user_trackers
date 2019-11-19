@@ -31,21 +31,24 @@ module UserTrackers
     ignore_events.include?(event_name) || ignore_events.include?('*')
   end
 
+  def self.db_track(params)
+    if !ignore_event?(params['event_name'], :db)
+      UserEvent.create(
+        anonymous_id: params['anonymous_id'],
+        event_name:'logged_in_as', 
+        event_attributes:{ user_id: params['user_id'] }
+      )  if params['user_logged_in']
+      UserEvent.create(params.except('user_logged_in')) 
+    end
+  end
+
   def self._track(params)
-    event_name = params[:event_name]
-    if(!ignore_event? (event_name))
-      if(!ignore_event?(event_name, :db))
-        UserEvent.create(
-          anonymous_id: params[:anonymous_id],
-          event_name:'logged_in_as', 
-          event_attributes:{ user_id: params[:user_id] }
-        )  if params[:user_logged_in]
-        UserEvent.create(params.except(:user_logged_in)) 
-      end
+    if !ignore_event? params['event_name']
+      db_track(params)
       trackers.each do |tracker|
         if options[Rails.env.to_sym][tracker.to_sym]
-          if(!ignore_event?(event_name, tracker.to_sym))
-            eval("#{tracker.capitalize}Tracker.track(params.as_json)")
+          if !ignore_event?(params['event_name'], tracker.to_sym)
+            eval("#{tracker.capitalize}Tracker.track(params)")
           end
         end
       end
@@ -64,6 +67,9 @@ module UserTrackers
       end
     end
     params[:anonymous_id] ||= UUID.new.generate
+
+    # for usage with sidekiq and resque
+    params = params.as_json
 
     if options[Rails.env.to_sym][:queue_adapter] == 'sidekiq'
       SidekiqWorker.perform_async(params) 
