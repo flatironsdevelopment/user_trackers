@@ -115,12 +115,12 @@ The track method must be called with a **hash** as a parameter and may be called
 **Example:**
 
     UserTrackers.track({
-    		user_id:9, 
-    		event_name:'publish_post', 
-    		event_attributes:{ title:'Post title', description:'new post'} 
-    	}, 
-    	session
-    )
+    	user_id:9, 
+    	event_name:'publish_post', 
+    	event_attributes:{ title:'Post title', description:'new post'} 
+    }, 
+    session
+  )
 
 You may call the track method with or without a `user_id` parameter. An `anonymous_id` will be generated in case no `user_id` is specified.
 
