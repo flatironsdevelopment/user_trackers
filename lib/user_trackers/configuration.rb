@@ -1,3 +1,6 @@
+require "erb"
+require "yaml"
+
 module Configuration
 
   def self.get_yml_options
