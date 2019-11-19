@@ -27,12 +27,13 @@ module UserTrackers
   end
   
   def self.ignore_event?(event_name, tracker = nil)
-    ignore_events = tracker ? options[Rails.env.to_sym][tracker][:ignore_events] : options[Rails.env.to_sym][:ignore_events]
+    ignore_events = []if tracker == :db && !options[Rails.env.to_sym][:db]
+    ignore_events = tracker ? options[Rails.env.to_sym][tracker][:ignore_events] || [] : options[Rails.env.to_sym][:ignore_events] || []
     ignore_events.include?(event_name) || ignore_events.include?('*')
   end
 
   def self.db_track(params)
-    if !ignore_event?(params['event_name'], :db)
+    if !options[Rails.env.to_sym][:db] || !ignore_event?(params['event_name'], :db)
       UserEvent.create(
         anonymous_id: params['anonymous_id'],
         event_name:'logged_in_as', 
