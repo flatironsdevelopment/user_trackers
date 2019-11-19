@@ -106,7 +106,7 @@ You may ignore events per environment or per tracker. For running trackers on a 
 
 # Usage
 
-You may call `UserTrackers.track` in your rails app or use clients related to each of the trackers.
+You may call `UserTrackers.track` in your rails app or use clients related to each of the gem's trackers.
 
 ## Track method
 
