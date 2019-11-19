@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'uuid'
   s.add_development_dependency "rake", "~> 10.0"
   s.add_development_dependency "minitest", "~> 5.0"
+  s.add_development_dependency "rspec"
 end
