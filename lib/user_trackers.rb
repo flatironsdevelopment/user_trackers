@@ -1,16 +1,16 @@
-require "user_trackers/configuration"
-require "user_trackers/mixpanel_tracker"
-require "user_trackers/intercom_tracker"
-require "user_trackers/slack_tracker"
-require "user_trackers/workers/sidekiq_worker"
-require "user_trackers/workers/resque_worker"
-
 require 'sidekiq'
 require 'resque'
 require 'mixpanel-ruby'
 require 'intercom'
 require 'uuid'
 require 'slack-ruby-client'
+
+require "user_trackers/configuration"
+require "user_trackers/mixpanel_tracker"
+require "user_trackers/intercom_tracker"
+require "user_trackers/slack_tracker"
+require "user_trackers/workers/sidekiq_worker"
+require "user_trackers/workers/resque_worker"
 
 module UserTrackers
   class << self
