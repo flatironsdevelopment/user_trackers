@@ -30,7 +30,7 @@ After running the generator you need to run the migration associated to `UserEve
 
 ## YML file
 
-API Tokens related to Mixpanel, Intercom and Slack may be set considering **development**, **test** and **production** rails environments.
+API Tokens related to [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [Intercom](https://github.com/intercom/intercom-ruby) and [Slack](https://github.com/slack-ruby/slack-ruby-client) may be set considering **development**, **test** and **production** rails environments.
 
 **user_trackers.yml** provides the following options:
 
@@ -82,7 +82,7 @@ API Tokens related to Mixpanel, Intercom and Slack may be set considering **deve
       db:
         ignore_events: []
 
-You may ignore events per environment or per tracker.
+You may ignore events per environment or per tracker. You may specify a `queue_adapter` option with a value of `resque` or `sidekiq` for running trackers on a background job.
 
 ## Configuration files for trackers
 
