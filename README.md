@@ -1,12 +1,10 @@
 # User trackers 
 
-user_trackers is a ruby gem for tracking user's activity on a ruby on rails app using Mixpanel, Intercom, Slack and app's database. 
+user_trackers is a ruby gem for tracking user's activity on a ruby on rails app using [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [Intercom](https://github.com/intercom/intercom-ruby), [Slack](https://github.com/slack-ruby/slack-ruby-client) and app's database. 
 
 If desired, the gem may be executed using [sidekiq](https://github.com/mperham/sidekiq)  or [resque](https://github.com/resque/resque) and may track guest users and associate their activity to authenticated users when used with **cookies**.
 
 # Installation
-
-Add the following line to your Gemfile:
 
 Add the following line to your Gemfile:
 
