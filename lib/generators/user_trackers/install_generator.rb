@@ -6,7 +6,8 @@ module UserTrackers
       UserTrackers.trackers.each do |tracker|
         copy_file "configure_#{tracker}.rb", "config/initializers/user_trackers/configure_#{tracker}.rb"
       end
-      copy_file "user_trackers.yml", "config/user_trackers.yml"
+      copy_file "user_trackers.rb", "config/user_trackers.rb"
+      File.rename("config/user_trackers.rb", "config/user_trackers.yml")
     end
 
     def generate_model

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'user_trackers'
-  s.version     = '0.0.16'
+  s.version     = '0.0.41'
   s.date        = '2019-11-20'
   s.summary     = "Gem for tracking user's activity on a rails app using mixpanel, intercom, slack and database"
   s.description = "Gem for tracking user's activity on a rails app using mixpanel, intercom, slack and database"
