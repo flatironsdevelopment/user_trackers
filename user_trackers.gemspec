@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'user_trackers'
-  s.version     = '0.0.15'
+  s.version     = '0.0.16'
   s.date        = '2019-11-20'
   s.summary     = "Gem for tracking user's activity on a rails app using mixpanel, intercom, slack and database"
   s.description = "Gem for tracking user's activity on a rails app using mixpanel, intercom, slack and database"
@@ -18,6 +18,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'slack-ruby-client', "~> 0.14.0"
   s.add_dependency 'uuid', ">= 2.0.0"
   s.add_development_dependency "rake", ">= 10.0"
-  s.add_development_dependency "minitest", ">= 5.0"
   s.add_development_dependency "rspec", ">= 3.9.0"
 end
