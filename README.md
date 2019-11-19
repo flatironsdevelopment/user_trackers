@@ -55,10 +55,9 @@ API Tokens related to [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [In
       queue_adapter: sidekiq
       mixpanel:
         token: <%= ENV["MIXPANEL_TOKEN"] %>
-        ignore_events: []
       intercom:
         token: <%= ENV['INTERCOM_TOKEN'] %>
-        ignore_events: []
+        ignore_events: ['test_event']
       slack:
         token: <%= ENV['SLACK_TOKEN'] %>
         activity_channel: <%= ENV['SLACK_ACTIVITY_CHANNEL'] %>
@@ -68,7 +67,6 @@ API Tokens related to [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [In
     
     test:
       ignore_events: ['ignored_event_name']
-      queue_adapter: sidekiq
       mixpanel:
         token: <%= ENV["TEST_MIXPANEL_TOKEN"] %>
         ignore_events: []
