@@ -1,43 +1,147 @@
-# UserTrackers
+# User trackers 
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/user_trackers`. To experiment with that code, run `bin/console` for an interactive prompt.
+user_trackers is a ruby gem for tracking user's activity on a ruby on rails app using Mixpanel, Intercom, Slack and app's database. 
 
-TODO: Delete this and the text above, and describe your gem
+If desired, the gem may be executed using [sidekiq](https://github.com/mperham/sidekiq)  or [resque](https://github.com/resque/resque) and may track guest users and associate their activity to authenticated users when used with **cookies**.
 
-## Installation
+# Installation
 
-Add this line to your application's Gemfile:
+Add the following line to your Gemfile:
 
-```ruby
-gem 'user_trackers'
-```
+Add the following line to your Gemfile:
 
-And then execute:
+    gem 'user_trackers'
 
-    $ bundle
+Then run `bundle install`
 
-Or install it yourself as:
+Next, run the generator:
 
-    $ gem install user_trackers
+    rails generate user_trackers:install
 
-## Usage
+The generator will create:
 
-TODO: Write usage instructions here
+- Configuration files in **config/initializers/user_trackers/**
+- Configuration file **config/user_trackers.yml**
+- `UserEvent` model and associated migration file
 
-## Development
+After running the generator you need to run the migration associated to `UserEvent`
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+    rails db:migrate
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+# Editing configuration files
 
-## Contributing
+## YML file
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/user_trackers. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+API Tokens related to Mixpanel, Intercom and Slack may be set considering **development**, **test** and **production** rails environments.
 
-## License
+**user_trackers.yml** provides the following options:
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+    development:
+      ignore_events: ['ignored_event_name']
+      # queue_adapter: sidekiq
+      mixpanel:
+        token: <%= ENV["DEV_MIXPANEL_TOKEN"] %>
+        ignore_events: []
+      intercom:
+        token: <%= ENV['DEV_INTERCOM_TOKEN'] %>
+        ignore_events: []
+      slack:
+        token: <%= ENV['DEV_SLACK_TOKEN'] %>
+        activity_channel: <%= ENV['DEV_SLACK_ACTIVITY_CHANNEL'] %>
+        ignore_events: []
+      db:
+        ignore_events: []
+    
+    production:
+      ignore_events: ['ignored_event_name']
+      queue_adapter: sidekiq
+      mixpanel:
+        token: <%= ENV["MIXPANEL_TOKEN"] %>
+        ignore_events: []
+      intercom:
+        token: <%= ENV['INTERCOM_TOKEN'] %>
+        ignore_events: []
+      slack:
+        token: <%= ENV['SLACK_TOKEN'] %>
+        activity_channel: <%= ENV['SLACK_ACTIVITY_CHANNEL'] %>
+        ignore_events: []
+      db:
+        ignore_events: []
+    
+    test:
+      ignore_events: ['ignored_event_name']
+      queue_adapter: sidekiq
+      mixpanel:
+        token: <%= ENV["TEST_MIXPANEL_TOKEN"] %>
+        ignore_events: []
+      intercom:
+        token: <%= ENV['TEST_INTERCOM_TOKEN'] %>
+        ignore_events: []
+      slack:
+        token: <%= ENV['TEST_SLACK_TOKEN'] %>
+        activity_channel: <%= ENV['TEST_SLACK_ACTIVITY_CHANNEL'] %>
+        ignore_events: []
+      db:
+        ignore_events: []
 
-## Code of Conduct
+You may ignore events per environment or per tracker.
 
-Everyone interacting in the UserTrackers project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/user_trackers/blob/master/CODE_OF_CONDUCT.md).
+## Configuration files for trackers
+
+ 
+
+**config/initializers/user_trackers/** will contain configuration files with blocks for customizing `user` and `event` attributes according to your app's datamodel. Configuration blocks will have this form:
+
+    UserTrackers.configure_mixpanel do |config|
+      def config.user_attributes(user_id, event_name, event_attributes = {}, anonymous_id)
+        user = User.find(user_id)
+        {
+          '$first_name': user.first_name,
+          '$last_name': user.last_name,
+          '$email': user.email, 
+          '$test': 'test_value2' 
+        }
+      end
+    
+      def config.event_attributes(user_id, event_name, event_attributes = {}, anonymous_id)
+        event_attributes
+      end
+    end
+
+# Usage
+
+You may call `UserTrackers.track` in your rails app or use clients related to each of the trackers.
+
+## Track method
+
+The track method must be called with a **hash** as a parameter and may be called with an optional parameter that should be related to rails' `session` 
+
+**Example:**
+
+    UserTrackers.track({
+    		user_id:9, 
+    		event_name:'publish_post', 
+    		event_attributes:{ title:'Post title', description:'new post'} 
+    	}, 
+    	session
+    )
+
+You may call the track method with or without a `user_id` parameter. An `anonymous_id` will be generated in case no `user_id` is specified.
+
+If `session` is specified then the gem will use cookies to track **guest users**.
+
+## Tracker clients
+
+You may also use the gem calling methods related to [Mixpanel](https://github.com/mixpanel/mixpanel-ruby), [Intercom](https://github.com/intercom/intercom-ruby) and [Slack](https://github.com/slack-ruby/slack-ruby-client) gems.
+
+**Mixpanel Example:**
+
+    UserTrackers::MixpanelTracker.client.track('User1', 'A Mixpanel Event')
+
+**Intercom Example:**
+
+    UserTrackers::IntercomTracker.client.users.find(email: "bob@example.com")
+
+**Slack Example:**
+
+    UserTrackers::SlackTracker.client.chat_postMessage(channel: '#general', text: 'Hello World', as_user: true)
