@@ -1,0 +1,15 @@
+development:
+  ignore_events: ['ignored_event_name']
+  # queue_adapter: sidekiq
+  mixpanel:
+    token: 'mixpanel_test_token'
+    ignore_events: []
+  intercom:
+    token: 'intercom_test_token'
+    ignore_events: []
+  slack:
+    token: 'slack_test_token'
+    activity_channel: 'test_channel'
+    ignore_events: []
+  # db:
+  #   ignore_events: []

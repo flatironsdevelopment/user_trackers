@@ -19,4 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'uuid', ">= 2.0.0"
   s.add_development_dependency "rake", ">= 10.0"
   s.add_development_dependency "rspec", ">= 3.9.0"
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency "rails", '~> 5.2.1'
 end
