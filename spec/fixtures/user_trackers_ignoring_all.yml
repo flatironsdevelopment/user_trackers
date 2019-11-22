@@ -1,4 +1,5 @@
 development:
+  ignore_events: ['ignored_event_name']
   mixpanel:
     token: 'mixpanel_test_token'
   intercom:

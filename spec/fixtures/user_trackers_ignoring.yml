@@ -1,0 +1,15 @@
+development:
+  ignore_events: ['ignored_event_name']
+  mixpanel:
+    token: 'mixpanel_test_token'
+    ignore_events: ['ignored_by_mixpanel']
+  intercom:
+    token: 'intercom_test_token'
+    ignore_events: ['ignored_by_intercom']
+  slack:
+    token: 'slack_test_token'
+    activity_channel: 'test_channel'
+    ignore_events: ['ignored_by_slack']
+  db:
+    ignore_events: ['ignored_by_db']
+
