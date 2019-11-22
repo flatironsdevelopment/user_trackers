@@ -8,7 +8,6 @@ end
 def mock_slack
   @slack_client = spy('SlackClient')
   allow(UserTrackers::SlackTracker).to receive(:client) {@slack_client}
-  allow(UserTrackers::SlackTracker).to receive(:activity_channel) {'test_channel'}
 end
 
 def mock_intercom

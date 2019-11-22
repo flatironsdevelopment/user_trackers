@@ -5,6 +5,7 @@ module UserTrackers
     end
 
     def self.activity_channel
+      opts = UserTrackers.options
       opts[Rails.env.to_sym][:slack][:activity_channel]
     end
 
