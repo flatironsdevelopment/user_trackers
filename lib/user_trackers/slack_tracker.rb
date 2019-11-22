@@ -4,7 +4,7 @@ module UserTrackers
       attr_accessor :client
     end
 
-    def activity_channel
+    def self.activity_channel
       opts[Rails.env.to_sym][:slack][:activity_channel]
     end
 
