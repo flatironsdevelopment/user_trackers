@@ -2,7 +2,10 @@ module UserTrackers
   module SlackTracker
     class << self
       attr_accessor :client
-      attr_accessor :activity_channel
+    end
+
+    def activity_channel
+      opts[Rails.env.to_sym][:slack][:activity_channel]
     end
 
     def self.client
@@ -11,7 +14,6 @@ module UserTrackers
         Slack.configure do |config|
           config.token = opts[Rails.env.to_sym][:slack][:token]
         end
-        @activity_channel = opts[Rails.env.to_sym][:slack][:activity_channel]
         @client = Slack::Web::Client.new
       end
       @client
@@ -21,12 +23,12 @@ module UserTrackers
       user_id, event_name, event_attributes, anonymous_id, user_logged_in = params.values_at('user_id', 'event_name', 'event_attributes', 'anonymous_id', 'user_logged_in')
       if user_logged_in
         client.chat_postMessage(
-          channel: @activity_channel,
+          channel: activity_channel,
           text: "An anonymous person with id *#{anonymous_id}* `logged in as` user with id *#{user_id}*"
         )
       end
       client.chat_postMessage(
-        channel: @activity_channel,
+        channel: activity_channel,
         text: message_for_event(user_id, event_name, event_attributes, anonymous_id)
       )
     end
