@@ -6,12 +6,17 @@ require 'fixtures/initializers/configure_slack'
 require 'mocks'
 require 'rails'
 
+
 context 'gem loads in a rails application' do
+
   before(:each) do
     class UserEvent end
     allow(Rails).to receive(:env) {'development'}
     allow(UserEvent).to receive(:create) {true}
     allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/user_trackers.yml'}
+    @uuid_new = spy('UUIDNew')
+    allow(UUID).to receive(:new) {@uuid_new}
+    allow(@uuid_new).to receive(:generate) {'random_id'}
     mock_mixpanel
     mock_intercom
     mock_slack
@@ -24,6 +29,18 @@ context 'gem loads in a rails application' do
   context 'user logged in after anonymous browsing' do
     before(:each) do
       @session = SESSION.as_json
+    end
+
+    it 'tracks with db' do 
+      UserTrackers.track( {user_id:1, event_name:'landing_page3', event_attributes:{ test:'some_test_value', other:'some_other_value'} }, @session)
+      expect(UserEvent).to have_received(:create).with(  
+        anonymous_id: "d3348e70-e8ca-0137-7bdb-701898ed044b",
+        event_name:'logged_in_as', 
+        event_attributes:{ user_id:1 }
+      ).exactly(1).times
+      expect(UserEvent).to have_received(:create).with(
+        {"user_id"=>1, "event_name"=>"landing_page3", "event_attributes"=>{"test"=>"some_test_value", "other"=>"some_other_value"}, "anonymous_id"=>"d3348e70-e8ca-0137-7bdb-701898ed044b"}
+      ).exactly(1).times
     end
 
     it 'tracks with mixpanel' do
@@ -67,6 +84,13 @@ context 'gem loads in a rails application' do
       @session = SESSION.as_json
     end
 
+    it 'tracks with db' do 
+      UserTrackers.track( {event_name:'landing_page3', event_attributes:{ test:'some_test_value', other:'some_other_value'} }, @session)
+      expect(UserEvent).to have_received(:create).with(
+        {"event_name"=>"landing_page3", "event_attributes"=>{"test"=>"some_test_value", "other"=>"some_other_value"}, "anonymous_id"=>"d3348e70-e8ca-0137-7bdb-701898ed044b"}
+      ).exactly(1).times
+    end
+
     it 'tracks with mixpanel' do
       UserTrackers.track( {event_name:'landing_page3', event_attributes:{ test:'some_test_value', other:'some_other_value'} }, @session)
       expect(@mixpanel_people).to have_received(:set).exactly(0).times
@@ -100,6 +124,13 @@ context 'gem loads in a rails application' do
   context 'logged in user actions' do
     before(:each) do
       @session = Hash.new
+    end
+
+    it 'tracks with db' do 
+      UserTrackers.track( {user_id:1, event_name:'landing_page3', event_attributes:{ test:'some_test_value', other:'some_other_value'} }, @session)
+      expect(UserEvent).to have_received(:create).with(
+        {"user_id"=>1, "event_name"=>"landing_page3", "event_attributes"=>{"test"=>"some_test_value", "other"=>"some_other_value"}, "anonymous_id"=>"random_id"}
+      ).exactly(1).times
     end
 
     it 'tracks with mixpanel' do
