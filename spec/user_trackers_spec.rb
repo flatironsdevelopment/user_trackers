@@ -3,6 +3,8 @@ require 'fixtures/session'
 require 'fixtures/initializers/configure_mixpanel'
 require 'fixtures/initializers/configure_intercom'
 require 'fixtures/initializers/configure_slack'
+require 'rspec-sidekiq'
+require 'sidekiq/testing'
 require 'mocks'
 require 'rails'
 
@@ -26,7 +28,7 @@ context 'gem loads in a rails application' do
 
   context 'configured with user_trackers.yml' do 
     before(:each) do 
-      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/user_trackers.yml'}
+      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/ymls/user_trackers.yml'}
     end
 
     it 'loads user_trackers.yml configuration file'  do 
@@ -173,7 +175,7 @@ context 'gem loads in a rails application' do
 
   context 'configured with user_trackers_ignoring_all.yml' do 
     it 'ignores event on all trackers' do 
-      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/user_trackers_ignoring_all.yml'}
+      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/ymls/user_trackers_ignoring_all.yml'}
       UserTrackers.track( {user_id:1, event_name:'ignored_event_name', event_attributes:{ test:'some_test_value', other:'some_other_value'} }, @session)
       expect(@mixpanel_client).to have_received(:track).exactly(0).times
       expect(@intercom_events).to have_received(:create).exactly(0).times
@@ -189,7 +191,7 @@ context 'gem loads in a rails application' do
 
   context 'configured with user_trackers_ignoring.yml' do 
     before(:each) do 
-      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/user_trackers_ignoring.yml'}
+      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/ymls/user_trackers_ignoring.yml'}
     end
 
     it 'ignores events on db tracker' do 
@@ -221,4 +223,22 @@ context 'gem loads in a rails application' do
     end
   end
 
+  context 'configured with user_trackers_sidekiq.yml' do
+    it 'tracks events using sidekiq worker' do
+      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/ymls/user_trackers_sidekiq.yml'}
+      params =  {user_id:1, event_name:'other_event', event_attributes:{ test:'some_test_value', other:'some_other_value'} }
+      UserTrackers.track(params, @session)
+      expect(UserTrackers::SidekiqWorker).to be_retryable true
+      expected_params =  {"user_id"=>1, "event_name"=>"other_event", "event_attributes"=>{"test"=>"some_test_value", "other"=>"some_other_value"}, "anonymous_id"=>"random_id"}
+      expect(UserTrackers::SidekiqWorker).to have_enqueued_sidekiq_job(expected_params)
+      Sidekiq::Testing.inline! do
+        params =  {user_id:1, event_name:'other_event', event_attributes:{ test:'some_test_value', other:'some_other_value'} }
+        UserTrackers.track(params, @session)
+        expect(@mixpanel_client).to have_received(:track).at_least(:once)
+        expect(@intercom_events).to have_received(:create).at_least(:once)
+        expect(@slack_client).to have_received(:chat_postMessage).at_least(:once)
+        expect(UserEvent).to have_received(:create).at_least(:once)
+      end
+    end
+  end
 end
