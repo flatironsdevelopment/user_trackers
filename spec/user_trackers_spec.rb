@@ -22,7 +22,6 @@ context 'gem loads in a rails application' do
     mock_mixpanel
     mock_intercom
     mock_slack
-    
   end
 
   context 'configured with user_trackers.yml' do 
