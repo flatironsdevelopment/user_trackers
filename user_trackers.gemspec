@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency "rails", '~> 5.2.1'
   s.add_development_dependency "rspec-sidekiq", '>= 3.0.0'
+  s.add_development_dependency "resque_spec", ">= 0.18.0"
 end

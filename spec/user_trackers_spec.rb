@@ -5,6 +5,7 @@ require 'fixtures/initializers/configure_intercom'
 require 'fixtures/initializers/configure_slack'
 require 'rspec-sidekiq'
 require 'sidekiq/testing'
+require 'resque_spec'
 require 'mocks'
 require 'rails'
 
@@ -232,6 +233,25 @@ context 'gem loads in a rails application' do
       expected_params =  {"user_id"=>1, "event_name"=>"other_event", "event_attributes"=>{"test"=>"some_test_value", "other"=>"some_other_value"}, "anonymous_id"=>"random_id"}
       expect(UserTrackers::SidekiqWorker).to have_enqueued_sidekiq_job(expected_params)
       Sidekiq::Testing.inline! do
+        params =  {user_id:1, event_name:'other_event', event_attributes:{ test:'some_test_value', other:'some_other_value'} }
+        UserTrackers.track(params, @session)
+        expect(@mixpanel_client).to have_received(:track).at_least(:once)
+        expect(@intercom_events).to have_received(:create).at_least(:once)
+        expect(@slack_client).to have_received(:chat_postMessage).at_least(:once)
+        expect(UserEvent).to have_received(:create).at_least(:once)
+      end
+    end
+  end
+  
+  context 'configured with user_trackers_resque.yml' do 
+    it 'tracks events using resque worker', :focus => true do 
+      allow(UserTrackers::Configuration).to receive(:config_path) {'spec/fixtures/ymls/user_trackers_resque.yml'}
+      ResqueSpec.reset!
+      params =  {user_id:1, event_name:'other_event', event_attributes:{ test:'some_test_value', other:'some_other_value'} }
+      UserTrackers.track(params, @session)
+      expected_params =  {"user_id"=>1, "event_name"=>"other_event", "event_attributes"=>{"test"=>"some_test_value", "other"=>"some_other_value"}, "anonymous_id"=>"random_id"}
+      expect(UserTrackers::RescueWorker).to have_queued(expected_params)
+      with_resque do
         params =  {user_id:1, event_name:'other_event', event_attributes:{ test:'some_test_value', other:'some_other_value'} }
         UserTrackers.track(params, @session)
         expect(@mixpanel_client).to have_received(:track).at_least(:once)
