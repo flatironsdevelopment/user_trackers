@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    user_trackers (0.0.41)
+    user_trackers (0.1.0)
       intercom (>= 3.0.0)
       mixpanel-ruby (>= 2.0.0)
       resque (>= 2.0.0)
