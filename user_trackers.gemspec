@@ -11,8 +11,6 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.required_ruby_version = ">= 2.4.0"
   
-  s.add_dependency  "sidekiq", ">= 3.0.0"
-  s.add_dependency  "resque", ">= 1.0.0"
   s.add_dependency 'mixpanel-ruby', ">= 2.0.0"
   s.add_dependency 'intercom', ">= 3.0.0"
   s.add_dependency 'slack-ruby-client', "~> 0.14.0"
