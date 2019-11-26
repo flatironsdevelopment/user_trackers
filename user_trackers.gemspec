@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'user_trackers'
-  s.version     = '0.1.2'
+  s.version     = '0.1.3'
   s.date        = '2019-11-20'
   s.summary     = "Gem for tracking user's activity on a rails app using mixpanel, intercom, slack and database"
   s.description = "Gem for tracking user's activity on a rails app using mixpanel, intercom, slack and database"
@@ -10,7 +10,9 @@ Gem::Specification.new do |s|
   s.metadata    = { "source_code_uri" => "https://github.com/flatironsdevelopment/user_trackers" }
   s.license       = 'MIT'
   s.required_ruby_version = ">= 2.4.0"
-
+  
+  s.add_dependency  "sidekiq", ">= 3.0.0"
+  s.add_dependency  "resque", ">= 1.0.0"
   s.add_dependency 'mixpanel-ruby', ">= 2.0.0"
   s.add_dependency 'intercom', ">= 3.0.0"
   s.add_dependency 'slack-ruby-client', "~> 0.14.0"
